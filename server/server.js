@@ -11,10 +11,22 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
+// CORS setup
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+app.use(cors({
+  origin: CLIENT_URL,
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 //Socket.io Server
 export const io = new Server(server, {
-    cors: { origin: "*"}
-})
+  cors: {
+    origin: CLIENT_URL,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 
 //Store online users 
 export const userSocketMap = {}; // { userId: socketId }
@@ -46,11 +58,9 @@ app.use("/api/status", (req, res)=>{
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter)
 
-
-
-
 //Connect to MongoDB
 await connectDB();
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, ()=> console.log("Server is running on" + PORT));
+
