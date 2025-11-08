@@ -1,5 +1,25 @@
-node_modules
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# env
 .env
+server/.env
+client/.env
+
+# build outputs
+client/dist/
+client/build/
+
+# OS
 .DS_Store
-/dist
-/build
+
+# logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
