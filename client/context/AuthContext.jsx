@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     const connectSocket = (user) => {
         if (!user) return;
 
-        // Disconnect existing socket if any
+        // Disconnect old socket if exists
         if (socket) socket.disconnect();
 
         const newSocket = io(backendUrl, {
@@ -100,6 +100,7 @@ export const AuthProvider = ({ children }) => {
 
         newSocket.on("getOnlineUsers", (userIds) => setOnlineUsers(userIds));
     };
+
 
     // Set token header on page load
     useEffect(() => {

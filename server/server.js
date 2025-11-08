@@ -34,18 +34,30 @@ export const userSocketMap = {}; // { userId: socketId }
 //Socket.io connection handler
 io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
-    console.log("User Connected", userId);
+    if (!userId) return;
 
-    if(userId) userSocketMap[userId] = socket.id;
-    //emit online users to all connected clients
+    // Add socket to user's list
+    if (userSocketMap[userId]) {
+        userSocketMap[userId].push(socket.id);
+    } else {
+        userSocketMap[userId] = [socket.id];
+    }
+
+    // Emit all online user IDs to everyone
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    
-    socket.on("disconnect", ()=>{
-        console.log("User Disconnected", userId);
-        delete userSocketMap[userId];
+
+    socket.on("disconnect", () => {
+        if (userSocketMap[userId]) {
+            userSocketMap[userId] = userSocketMap[userId].filter(
+                (id) => id !== socket.id
+            );
+            if (userSocketMap[userId].length === 0) {
+                delete userSocketMap[userId];
+            }
+        }
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    })
-})
+    });
+});
 
 //Middleware
 app.use(express.json({limit: "4mb"}));
